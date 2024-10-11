@@ -37,7 +37,7 @@ public class CustomerServerImpl implements CustomerServer {
     @Override
     public void deleteCustomer(String id) {
         //error
-
+        customerDao.deleteById(id);
         Optional<CustomerEntity> selectCustomerId =customerDao.findById(id);
    if (selectCustomerId.isPresent()) {
        throw new CustomerNotFoundException("Delete customer failed");
