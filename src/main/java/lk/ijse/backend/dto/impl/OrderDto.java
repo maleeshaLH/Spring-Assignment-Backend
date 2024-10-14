@@ -1,10 +1,13 @@
 package lk.ijse.backend.dto.impl;
 
+import jakarta.persistence.OneToMany;
 import lk.ijse.backend.dto.SuperDTO;
+import lk.ijse.backend.entity.OrderEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -12,12 +15,9 @@ import java.util.List;
 @Data
 public class OrderDto implements SuperDTO {
     private String orderId;
-    private String orderDate;
+    private LocalDateTime  orderDate;
     private String customerId;
+    private List<OrderDetailsDto> orderDetails;
     private double total;
-    private double discount;
-    private double subTotal;
-    private double cash;
-    private double balance;
-    private List<ItemDto> items;
+
 }
