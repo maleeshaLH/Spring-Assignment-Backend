@@ -1,4 +1,4 @@
-package lk.ijse.backend.service;
+package lk.ijse.backend.service.Impl;
 
 import jakarta.transaction.Transactional;
 import lk.ijse.backend.dao.CustomerDao;
@@ -6,9 +6,9 @@ import lk.ijse.backend.dto.impl.CustomerDto;
 import lk.ijse.backend.entity.CustomerEntity;
 import lk.ijse.backend.exception.CustomerNotFoundException;
 import lk.ijse.backend.exception.DataPersistFailedException;
+import lk.ijse.backend.service.CustomerServer;
 import lk.ijse.backend.util.Mapping;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,30 +36,23 @@ public class CustomerServerImpl implements CustomerServer {
 
     @Override
     public void deleteCustomer(String id) {
-        //error
-        customerDao.deleteById(id);
-        Optional<CustomerEntity> selectCustomerId =customerDao.findById(id);
-   if (selectCustomerId.isPresent()) {
-       throw new CustomerNotFoundException("Delete customer failed");
-   }else {
-       customerDao.deleteById(id);
-   }
+        if (customerDao.existsById(id)) {
+            customerDao.deleteById(id);
+        }else {
+            throw new CustomerNotFoundException("Delete not Customer");
+        }
     }
 
     @Override
     public void updateCustomer(CustomerDto updateDto) {
         CustomerEntity updateCustomer =customerDao.save(mapping.convertToCustomerEntity(updateDto));
-    if (updateCustomer == null && updateDto.getId() == null) {
-        throw new DataPersistFailedException("Update customer failed");
-    }else {
-
-    }
-
+        if (updateCustomer == null && updateDto.getId() == null) {
+            throw new DataPersistFailedException("Update customer failed");
+        }
     }
 
     @Override
     public List<CustomerDto> getAllCustomer() {
-        List<CustomerEntity> customerEntities = customerDao.findAll();
-        return mapping.convertCustomerToDTOList(customerEntities);
+        return mapping.convertCustomerToDTOList(customerDao.findAll());
     }
 }
