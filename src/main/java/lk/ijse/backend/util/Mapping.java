@@ -2,8 +2,12 @@ package lk.ijse.backend.util;
 
 import lk.ijse.backend.dto.impl.CustomerDto;
 import lk.ijse.backend.dto.impl.ItemDto;
+import lk.ijse.backend.dto.impl.OrderDetailsDto;
+import lk.ijse.backend.dto.impl.OrderDto;
 import lk.ijse.backend.entity.CustomerEntity;
 import lk.ijse.backend.entity.ItemEntity;
+import lk.ijse.backend.entity.OrderDetailsEntity;
+import lk.ijse.backend.entity.OrderEntity;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,4 +33,16 @@ public class Mapping {
     public ItemEntity convertToItemEntity(ItemDto itemDto) {
          return modelMapper.map(itemDto, ItemEntity.class);
     }
+    public List<ItemDto> convertToItemEntityList(List<ItemEntity> itemEntities) {
+         return modelMapper.map(itemEntities, new TypeToken<List<ItemDto>>() {}.getType());
+    }
+
+    public OrderEntity convertToOrderEntity(OrderDto orderDto) {
+        return modelMapper.map(orderDto, OrderEntity.class);
+    }
+
+    public OrderDetailsEntity convertToOrderDetailsEntity(OrderDetailsDto dto) {
+        return modelMapper.map(dto, OrderDetailsEntity.class);
+    }
+
 }
