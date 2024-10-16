@@ -74,8 +74,8 @@ Technologies used in the project:
 
 <h2> API Documentation </h2>
 
-* You can view the detailed API documentation with example requests and responses <a href="">here</a>.
+* You can view the detailed API documentation with example requests and responses <a href="https://documenter.getpostman.com/view/35384987/2sAXxV5A1m#fbbbd888-e64e-4be5-ba52-6efcfef87579">here</a>.
 
-<h2>🛡️ License:</h2>
+<h2> License:</h2>
 
 This project is available under the MIT License. For more information, please refer to the LICENSE file.
