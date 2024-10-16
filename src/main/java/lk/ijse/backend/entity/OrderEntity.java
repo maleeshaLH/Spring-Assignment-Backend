@@ -17,12 +17,12 @@ import java.util.List;
 @Table(name = "orders")
 public class OrderEntity implements SuperEntity {
     @Id
-    private int orderId;
+    private String orderId;
     @ManyToOne
     @JoinColumn(name = "id" ,nullable = false)
     private CustomerEntity  customer;
     private LocalDateTime  orderDate;
     private double total;
-//    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//    private List<OrderDetailsEntity> orderDetails;
+    @OneToMany(mappedBy = "order")
+    private List<OrderDetailsEntity> orderDetails;
 }

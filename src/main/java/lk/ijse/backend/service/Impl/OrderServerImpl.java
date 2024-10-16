@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,23 +32,52 @@ public class OrderServerImpl implements OrderServer {
     @Override
     public void saveOrder(OrderDto orderDto) {
 
-        //orderDto.setOrderId(generateOrderID());
+        orderDto.setOrderId(AppUtil.createOrderId());
         orderDto.setOrderDate(AppUtil.getCurrentDateTime());
         orderDto.setTotal(orderDto.getOrderDetails().stream().mapToDouble(detail -> detail.getQty() * detail.getUnitPrice()).sum());
         OrderEntity orderEntity = mapping.convertToOrderEntity(orderDto);
 
 
-//        List<OrderDetailsEntity> orderDetailsEntities = orderDto.getOrderDetails()
-//                        .stream().map(detail ->{
-//                            OrderDetailsEntity orderDetailsEntity = mapping.convertToOrderDetailsEntity(detail);
-//                            orderDetailsEntity.setOrder(orderEntity);
-//                            return orderDetailsEntity;
-//                }).collect(Collectors.toList());
-//            orderEntity.setOrderDetails(orderDetailsEntities);
-       // orderDao.save(orderEntity);
+//        List<OrderDetailsEntity> orderDetailEntities = orderDto.getOrderDetails().stream().map(detail -> {
+//                    OrderDetailsEntity orderDetailEntity = mapping.convertToOrderDetailsEntity(detail);
+//                    orderDetailEntity.setOrder(orderEntity);
+//                    return orderDetailEntity;
+//                })
+//                .collect(Collectors.toList());
+//
+//        orderEntity.setOrderDetails(orderDetailEntities);
+
+        List<OrderDetailsEntity> orderDetailEntities = new ArrayList<>();
+        try {
+            orderDetailEntities = orderDto.getOrderDetails().stream()
+                    .map(detail -> {
+                        try {
+                            OrderDetailsEntity orderDetailEntity = mapping.convertToOrderDetailsEntity(detail);
+                            orderDetailEntity.setOrder(orderEntity);
+                            return orderDetailEntity;
+                        } catch (Exception e) {
+                            // Log the exception and return null to avoid adding a faulty entity to the list
+                            System.err.println("Error converting order detail: " + e.getMessage());
+                            return null; // or handle it in another way
+                        }
+                    })
+                    .filter(Objects::nonNull) // Filter out null values in case of conversion errors
+                    .collect(Collectors.toList());
+
+            orderEntity.setOrderDetails(orderDetailEntities);
+
+        } catch (NullPointerException e) {
+            System.err.println("NullPointerException: OrderDto or its details are null - " + e.getMessage());
+            // Handle the error (e.g., log, throw custom exception, or set default values)
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+            // Handle any other unexpected errors
+        }
+
         boolean allItemUpdate = orderDto.getOrderDetails().stream().allMatch(this::updateItemQty);
         if (allItemUpdate) {
             orderDao.save(orderEntity);
+
 
         }else {
             throw new DataPersistFailedException("order save failed");
@@ -66,19 +97,5 @@ public class OrderServerImpl implements OrderServer {
         itemDao.save(item);
         return true;
     }
-    private String generateOrderID() {
-        if (orderDao.count() == 0) {
-            return "O001";
-        } else {
-            String lastId = String.valueOf(orderDao.findAll().get(orderDao.findAll().size() - 1).getOrderId());
-            int newId = Integer.parseInt(lastId.substring(1)) + 1;
-            if (newId < 10) {
-                return "O00" + newId;
-            } else if (newId < 100) {
-                return "O0" + newId;
-            } else {
-                return "O" + newId;
-            }
-        }
-    }
+
 }

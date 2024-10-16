@@ -23,13 +23,12 @@ public class OrderController {
     public ResponseEntity<Void> saveOrder(@RequestBody OrderDto orderDto) {
 
         try {
-
-            System.out.println("1");
             orderServer.saveOrder(orderDto);
             return new  ResponseEntity<>(HttpStatus.NO_CONTENT);
         }catch (DataPersistFailedException e){
             return new  ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }catch (Exception e){
+            e.printStackTrace();
             return new  ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
